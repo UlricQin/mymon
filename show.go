@@ -112,7 +112,6 @@ func ShowSlaveStatus(conf *common.Config, db mysql.Conn) ([]*MetaData, error) {
 		IsSlave = 0
 	}
 
-	Tag = GetTag(conf)
 	isSlaveMetric := NewMetric(conf, "Is_slave")
 	isSlaveMetric.SetValue(IsSlave)
 

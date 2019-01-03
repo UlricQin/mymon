@@ -283,24 +283,23 @@ func dataType(k string) string {
 
 // MetaData is the json obj to output
 type MetaData struct {
-	Metric      string      `json:"metric"`      // metric name
-	Endpoint    string      `json:"endpoint"`    // Hostname
-	Value       interface{} `json:"value"`       // number or string
-	CounterType string      `json:"counterType"` // GAUGE:original value, COUNTER: delta value(ps)
-	Tags        string      `json:"tags"`        // port=%d,isSlave=%d,readOnly=%d,type=mysql
-	Timestamp   int64       `json:"timestamp"`   // time.Now().Unix()
-	Step        int64       `json:"step"`        // Default 60 seconds
+	Metric    string            `json:"name"`      // metric name
+	Value     interface{}       `json:"value"`     // number or string
+	Tags      map[string]string `json:"tags"`      // port=%d,isSlave=%d,readOnly=%d,type=mysql
+	Timestamp int64             `json:"timestamp"` // time.Now().Unix()
+	Step      int64             `json:"step"`      // Default 60 seconds
 }
 
 // NewMetric is the constructor of metric
 func NewMetric(conf *common.Config, name string) *MetaData {
+	tags := make(map[string]string)
+	tags["host"] = common.Hostname(conf)
+	tags["port"] = fmt.Sprint(conf.DataBase.Port)
 	return &MetaData{
-		Metric:      name,
-		Endpoint:    common.Hostname(conf),
-		CounterType: dataType(name),
-		Tags:        Tag,
-		Timestamp:   time.Now().Unix(),
-		Step:        60,
+		Metric:    name,
+		Tags:      tags,
+		Timestamp: time.Now().Unix(),
+		Step:      60,
 	}
 }
 
@@ -312,13 +311,6 @@ func (m *MetaData) SetValue(v interface{}) {
 // SetName is just set a value
 func (m *MetaData) SetName(name string) {
 	m.Metric = name
-}
-
-// GetTag can get the tag to output
-func GetTag(conf *common.Config) string {
-	return fmt.Sprintf(
-		"port=%d,isSlave=%d,readOnly=%d,type=mysql",
-		conf.DataBase.Port, IsSlave, IsReadOnly)
 }
 
 // MySQLAlive checks if mysql can response

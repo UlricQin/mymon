@@ -116,8 +116,6 @@ func fetchData(conf *common.Config, db mysql.Conn) (err error) {
 		return
 	}
 
-	Tag = GetTag(conf)
-
 	globalStatus, err := ShowGlobalStatus(conf, db)
 	if err != nil {
 		return
